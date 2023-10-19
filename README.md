@@ -73,13 +73,27 @@ try {
 
   // Actual module code here
   function Component() {
+    // Call without arguments triggers collecting the custom Hook list.
+    // Next calls are noops.
+    signature();
     // ...
   }
 
+  // Call with arguments attaches the signature to the type.
   signature(Component, 'oDgYfYHkD9Wkv4hrAPCkI/ev3YU=');
   globalThis.$RefreshReg$(Component, 'Component');
+
+  // Performing refresh.
+  // Pass updatedFamilies(re-render with keep states), staleFamilies(re-mount) to reconciler and
+  // will be called scheduleFibersWithFamiliesRecursively() in sync lane(flushSync).
+  refreshRuntime.performReactRefresh(); // To avoid duplicate calls, debounce it.
 } finally {
   globalThis.$RefreshReg$ = prevRefreshReg;
   globalThis.$RefreshSig$ = prevRefreshSig;
 }
 ```
+
+After component changed, re-build component and send to client with same template and evaluate it.
+
+- Same signature: will be re-rendered.
+- Different signature: will be re-mounted.
